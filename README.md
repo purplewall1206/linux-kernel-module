@@ -82,6 +82,22 @@ echo 'KERNEL=="babel", SUBSYSTEM=="babel", MODE="0666"' >> /etc/udev/rules.d/99-
 
 Reload the driver and it will be accessible without superuser rights.
 
+However, because of the cpu features 'smap', Ring 0 code cannot access Ring 3 memory directly, so there will be 'BUG: unable to handle kernel paging request' reported in dmesg.
+
+In order to solve the problem and make the babel work, open **/etc/default/grub**, add 
+```sh
+GRUB_CMDLINE_LINUX="nosmap"
+```
+then
+
+```sh
+sudo update-grub
+reboot
+# after reboot
+sudo cat /proc/cpuinfo | grep sm
+```
+you will see only smep work ,but no smap. Then, the babel will work properly.
+
 ## Tips
 
 Show loaded modules with:
